@@ -23,8 +23,8 @@ See [`src/shared/config.ts`](src/shared/config.ts) to understand how these varia
 
 | Variable Name | Description | Default Value |
 | -------------------- | ----------- | ------ |
-| FIN_PORTAL_EXPERIENCE_SERVICE.CENTRAL_ADMIN_URL | Central Admin Service URL | http://central-ledger:3001
-| FIN_PORTAL_EXPERIENCE_SERVICE.CENTRAL_SETTLEMENTS_URL | Central Settlements Service URL | http://central-settlements:3001
+| CENTRAL_ADMIN_URL | Central Admin Service URL | http://central-ledger:3001
+| CENTRAL_SETTLEMENTS_URL | Central Settlements Service URL | http://central-settlements:3001
 
 
 > ***Note:** See [`./config/default.json`](./config/default.json) for all available config options, and their default values.*
