@@ -42,7 +42,7 @@ cd reporting-fin-portal-experience-svc
 npm ci
 ```
 
-### Run the service with NPM locally (Connects with the current K8S context in the local machine)
+### Run the service with NPM locally
 ```bash
 npm run startDev
 ```
