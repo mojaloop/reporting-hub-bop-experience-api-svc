@@ -33,43 +33,61 @@
 import express from 'express'
 import { createProxyMiddleware, Filter, Options, RequestHandler } from 'http-proxy-middleware'
 
-import { ServiceConfig } from '../shared/config'
+import Config from '../shared/config'
+import { addUserToExtensionList } from './modifiers/central-admin'
 import Logger from '@mojaloop/central-services-logger'
 
 const app = express()
 
+async function setProxyBody (proxyReq: any, body: any) {
+  const newBody = JSON.stringify(body)
+  proxyReq.setHeader('content-length', newBody.length)
+  proxyReq.write(newBody)
+  proxyReq.end()
+}
+
+function getUserId (headers: any) {
+  return headers['x-email']
+}
 // proxy middleware options
-const centralAdminOptions = {
-  target: 'https://postman-echo.com',
+const commonOptions = {
   changeOrigin: true,
+  logLevel: <'error' | 'debug' | 'info' | 'warn' | 'silent' | undefined>'debug',
+  proxyTimeout: Config.PROXY_TIMEOUT
+}
+const centralAdminOptions = {
+  ...commonOptions,
+  target: Config.CENTRAL_ADMIN_URL,
   pathRewrite: {
-    '^/central-admin': '/'
+    '^/central-admin': ''
+  },
+  onError: function (_err: any, _req: any, res: any) {
+    res.writeHead(500, {
+      'Content-Type': 'text/plain'
+    })
+    res.end('Something went wrong while proxying the request.')
   },
   onProxyReq: function (proxyReq: any, req: any) {
     if (!req.body || !Object.keys(req.body).length) {
       return
     }
-    // const contentType = proxyReq.getHeader('Content-Type')
-    const bodyData = JSON.parse(JSON.stringify(req.body))
-    delete req.body
-    bodyData.city = 'Hyderabad'
-    const newBody = JSON.stringify(bodyData)
-    proxyReq.setHeader('content-length', newBody.length)
-    proxyReq.write(newBody)
-    proxyReq.end()
+    const userid = getUserId(req.headers)
+    if (req.path === '/post' && req.method === 'POST') {
+      const { body } = addUserToExtensionList(userid, req.headers, req.body)
+      setProxyBody(proxyReq, body)
+    } else if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
+      const { body } = addUserToExtensionList(userid, req.headers, req.body)
+      setProxyBody(proxyReq, body)
+    }
   }
 }
 
-async function _create (config: ServiceConfig): Promise<void> {
+async function run (): Promise<void> {
   app.use(express.json())
   // app.use(express.urlencoded())
   app.use('/central-admin/*', createProxyMiddleware(centralAdminOptions))
-  app.listen(config.PORT)
-  Logger.info(`service is running on port ${config.PORT}`)
-}
-
-async function run (config: ServiceConfig): Promise<void> {
-  await _create(config)
+  app.listen(Config.PORT)
+  Logger.info(`service is running on port ${Config.PORT}`)
 }
 
 export default {

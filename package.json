@@ -7,13 +7,9 @@
     "Vijaya Kumar Guthi <vijaya.guthi@modusbox.com>"
   ],
   "repository": "https://github.com/mojaloop/reporting-fin-portal-experience-svc",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "build": "tsc -p ./tsconfig.build.json; rm -rf dist/src/interface; cp -R src/interface dist/src/interface",
-    "watch": "npx tsc -w",
-    "clean": "rm -rf dist node_modules",
-    "start": "node dist/src/index.js",
-    "startDev": "ts-node -r tsconfig-paths/register -P ./tsconfig.json src/index.ts",
+    "start": "ts-node -r tsconfig-paths/register -P ./tsconfig.json src/index.ts",
     "dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node' src/index.ts",
     "lint": "eslint ./src/**/*.ts *.js",
     "lint:fix": "eslint --fix ./src/**/*.ts *.js",
@@ -28,29 +24,20 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@hapi/h2o2": "^9.1.0",
-    "@hapi/hapi": "^20.2.1",
-    "@hapi/inert": "^6.0.4",
-    "@hapi/vision": "^6.1.0",
     "@mojaloop/central-services-error-handling": "11.3.0",
     "@mojaloop/central-services-logger": "10.6.2",
     "@mojaloop/central-services-metrics": "11.0.0",
     "@mojaloop/central-services-shared": "^15.1.0",
     "@mojaloop/event-sdk": "10.7.1",
-    "ajv": "8.6.3",
-    "ajv-keywords": "5.0.0",
     "express": "^4.17.2",
     "http-proxy-middleware": "^2.0.3",
     "parse-strings-in-object": "^1.4.0",
     "rc": "^1.2.8",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "ts-node": "^10.1.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
-    "@types/hapi__h2o2": "^8.3.3",
-    "@types/hapi__hapi": "^20.0.9",
-    "@types/hapi__inert": "^5.2.3",
-    "@types/hapi__vision": "^5.5.3",
     "@types/jest": "^27.0.2",
     "@types/node": "^16.10.1",
     "@types/rc": "^1.2.0",
@@ -80,9 +67,7 @@
     "@mojaloop/central-services-error-handling": "11.3.0",
     "@mojaloop/central-services-logger": "10.6.2",
     "@mojaloop/central-services-metrics": "11.0.0",
-    "@mojaloop/event-sdk": "10.7.1",
-    "ajv": "8.6.3",
-    "ajv-keywords": "5.0.0"
+    "@mojaloop/event-sdk": "10.7.1"
   },
   "peerDependenciesMeta": {
     "@mojaloop/central-services-error-handling": {

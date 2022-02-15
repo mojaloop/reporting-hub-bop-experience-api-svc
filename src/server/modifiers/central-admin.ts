@@ -27,26 +27,31 @@
  --------------
  ******/
 
-import rc from 'rc'
-import parse from 'parse-strings-in-object'
-import Config from '../../config/default.json'
-import Package from '../../package.json'
-export interface ServiceConfig {
-  // package.json
-  PACKAGE: Record<string, unknown>;
-  // API Server
-  PORT: number;
-  HOST: string;
-  CORS_WHITELIST: string[];
-  ALLOW_CREDENTIALS: boolean;
-  CENTRAL_ADMIN_URL: string;
-  CENTRAL_SETTLEMENTS_URL: string;
-  PROXY_TIMEOUT: number;
+interface ModifiedRequest {
+  headers: any;
+  body: any;
 }
 
-const RC = parse(rc('FIN_PORTAL_EXPERIENCE_SERVICE', Config)) as ServiceConfig
+const addUserToExtensionList = (userid: string, headers: any, body: any): ModifiedRequest => {
+  const newBody = JSON.parse(JSON.stringify(body))
+  if (userid) {
+    if (!newBody.extensionList) {
+      newBody.extensionList = {}
+    }
+    if (!newBody.extensionList.extension) {
+      newBody.extensionList.extension = []
+    }
+    newBody.extensionList.extension.push({
+      key: 'user',
+      value: userid
+    })
+  }
+  return {
+    headers,
+    body: newBody
+  }
+}
 
-export default {
-  ...RC,
-  PACKAGE: Package
+export {
+  addUserToExtensionList
 }
