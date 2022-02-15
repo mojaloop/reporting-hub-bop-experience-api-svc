@@ -30,7 +30,7 @@ USER user1
 
 COPY --chown=user1 --from=builder /opt/reporting-fin-portal-experience-svc .
 
-RUN npm prune --production
+# RUN npm prune --production
 
-EXPOSE 3008
+EXPOSE 3001
 CMD ["npm", "run", "start"]
