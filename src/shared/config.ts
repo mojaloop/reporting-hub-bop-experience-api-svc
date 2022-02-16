@@ -38,7 +38,6 @@ export interface ServiceConfig {
   PORT: number;
   HOST: string;
   CORS_WHITELIST: string[];
-  ALLOW_CREDENTIALS: boolean;
   CENTRAL_ADMIN_URL: string;
   CENTRAL_SETTLEMENTS_URL: string;
   PROXY_TIMEOUT: number;

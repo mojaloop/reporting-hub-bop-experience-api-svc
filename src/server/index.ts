@@ -86,6 +86,12 @@ async function run (): Promise<void> {
   app.use(express.json())
   // app.use(express.urlencoded())
   app.use('/central-admin/*', createProxyMiddleware(centralAdminOptions))
+  // Health Endpoint
+  app.get('/health', (_req, res) => {
+    res.json({
+      status: 'OK'
+    })
+  })
   app.listen(Config.PORT)
   Logger.info(`service is running on port ${Config.PORT}`)
 }

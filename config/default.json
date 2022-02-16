@@ -8,7 +8,6 @@
     "http://localhost:8080",
     "http://localhost:8081"
   ],
-  "ALLOW_CREDENTIALS": false,
   "CENTRAL_ADMIN_URL": "http://central-ledger:3001",
   "CENTRAL_SETTLEMENTS_URL": "http://central-settlements:3001",
   "PROXY_TIMEOUT": 10000
