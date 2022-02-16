@@ -413,9 +413,8 @@ workflows:
             - build-local
             # - license-scan
             # - image-scan
-            - test-unit
-            - test-coverage
-            - test-integration
+            # - test-unit
+            # - test-coverage
             - audit-licenses
             - linting-check
             - vulnerability-check
