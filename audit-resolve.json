@@ -1,0 +1,50 @@
+{
+  "decisions": {
+    "1004854|@mojaloop/central-services-shared>widdershins>openapi-sampler>json-pointer": {
+      "decision": "postpone",
+      "madeAt": 1645021425839
+    },
+    "1004869|@mojaloop/central-services-shared>widdershins>swagger2openapi>better-ajv-errors>jsonpointer": {
+      "decision": "postpone",
+      "madeAt": 1645021430493
+    },
+    "1004869|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>better-ajv-errors>jsonpointer": {
+      "decision": "postpone",
+      "madeAt": 1645021430493
+    },
+    "1004946|@mojaloop/central-services-shared>widdershins>yargs>string-width>strip-ansi>ansi-regex": {
+      "decision": "postpone",
+      "madeAt": 1645021431155
+    },
+    "1004946|@mojaloop/central-services-shared>widdershins>yargs>cliui>string-width>strip-ansi>ansi-regex": {
+      "decision": "postpone",
+      "madeAt": 1645021431155
+    },
+    "1005383|@mojaloop/central-services-shared>shins>sanitize-html": {
+      "decision": "postpone",
+      "madeAt": 1645021435657
+    },
+    "1005384|@mojaloop/central-services-shared>shins>sanitize-html": {
+      "decision": "postpone",
+      "madeAt": 1645021435657
+    },
+    "1005534|@mojaloop/central-services-shared>widdershins>yargs>yargs-parser": {
+      "decision": "postpone",
+      "madeAt": 1645021436333
+    },
+    "1006846|@mojaloop/central-services-shared>shins>sanitize-html>postcss": {
+      "decision": "postpone",
+      "madeAt": 1645021441204
+    },
+    "1006886|@mojaloop/central-services-shared>shins>markdown-it": {
+      "decision": "postpone",
+      "madeAt": 1645021441913
+    },
+    "1007017|@mojaloop/central-services-shared>widdershins>swagger2openapi>oas-validator>ajv": {
+      "decision": "postpone",
+      "madeAt": 1645021443364
+    }
+  },
+  "rules": {},
+  "version": 1
+}
