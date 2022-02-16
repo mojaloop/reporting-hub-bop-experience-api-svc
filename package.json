@@ -1,12 +1,12 @@
 {
-  "name": "@mojaloop/reporting-fin-portal-experience-svc",
+  "name": "@mojaloop/reporting-hub-bop-experience-api-svc",
   "version": "0.0.1",
-  "description": "Experience API for finance portal",
+  "description": "Experience API for business operations framework",
   "author": "Mojaloop",
   "contributors": [
     "Vijaya Kumar Guthi <vijaya.guthi@modusbox.com>"
   ],
-  "repository": "https://github.com/mojaloop/reporting-fin-portal-experience-svc",
+  "repository": "https://github.com/mojaloop/reporting-hub-bop-experience-api-svc",
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node -r tsconfig-paths/register -P ./tsconfig.json src/index.ts",

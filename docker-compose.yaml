@@ -5,8 +5,8 @@ networks:
     name: mojaloop-net
 
 services:
-  reporting-fin-portal-experience-svc:
-    image: mojaloop/reporting-fin-portal-experience-svc:local
+  reporting-hub-bop-experience-api-svc:
+    image: mojaloop/reporting-hub-bop-experience-api-svc:local
     build:
       context: .
     ports:
@@ -14,4 +14,4 @@ services:
     networks:
       - mojaloop-net
     environment:
-      - FIN_PORTAL_EXPERIENCE_SERVICE_CENTRAL_ADMIN_URL=https://postman-echo.com
+      - BOP_EXPERIENCE_API_CENTRAL_ADMIN_URL=https://postman-echo.com

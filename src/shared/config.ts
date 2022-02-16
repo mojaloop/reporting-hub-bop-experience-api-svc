@@ -44,7 +44,7 @@ export interface ServiceConfig {
   PROXY_TIMEOUT: number;
 }
 
-const RC = parse(rc('FIN_PORTAL_EXPERIENCE_SERVICE', Config)) as ServiceConfig
+const RC = parse(rc('BOP_EXPERIENCE_API', Config)) as ServiceConfig
 
 export default {
   ...RC,
