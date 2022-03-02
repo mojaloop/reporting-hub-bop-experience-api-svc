@@ -31,13 +31,15 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../ambient.d.ts"/>
 import express from 'express'
-import { createProxyMiddleware, Filter, Options, RequestHandler } from 'http-proxy-middleware'
+import http from 'http'
+import { createProxyMiddleware } from 'http-proxy-middleware'
 
 import Config from '../shared/config'
 import { addUserToExtensionList } from './modifiers/central-admin'
 import Logger from '@mojaloop/central-services-logger'
 
 const app = express()
+let appInstance: http.Server
 
 async function setProxyBody (proxyReq: any, body: any) {
   const newBody = JSON.stringify(body)
@@ -72,10 +74,7 @@ const centralAdminOptions = {
       return
     }
     const userid = getUserId(req.headers)
-    if (req.path === '/post' && req.method === 'POST') {
-      const { body } = addUserToExtensionList(userid, req.headers, req.body)
-      setProxyBody(proxyReq, body)
-    } else if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
+    if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
       const { body } = addUserToExtensionList(userid, req.headers, req.body)
       setProxyBody(proxyReq, body)
     }
@@ -83,6 +82,7 @@ const centralAdminOptions = {
 }
 
 async function run (): Promise<void> {
+  // eslint-disable-next-line import/no-named-as-default-member
   app.use(express.json())
   // app.use(express.urlencoded())
   app.use('/central-admin/*', createProxyMiddleware(centralAdminOptions))
@@ -92,10 +92,21 @@ async function run (): Promise<void> {
       status: 'OK'
     })
   })
-  app.listen(Config.PORT)
+  appInstance = app.listen(Config.PORT)
   Logger.info(`service is running on port ${Config.PORT}`)
 }
 
+async function terminate (): Promise<void> {
+  appInstance.close()
+  Logger.info('service stopped')
+}
+
+function getApp (): any {
+  return app
+}
+
 export default {
-  run
+  run,
+  getApp,
+  terminate
 }
