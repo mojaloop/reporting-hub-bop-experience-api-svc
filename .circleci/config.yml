@@ -86,61 +86,61 @@ jobs:
           paths:
             - node_modules
 
-  # test-unit:
-  #   executor: default-docker
-  #   steps:
-  #     - run:
-  #         name: Install general dependencies
-  #         command: *defaults_Dependencies
-  #     - checkout
-  #     - restore_cache:
-  #         keys:
-  #           - dependency-cache-{{ checksum "package-lock.json" }}
-  #     - run:
-  #         name: Execute unit tests
-  #         command: npm run test:unit
-  #     - run:
-  #         name: prepare test/results
-  #         command: |
-  #           mkdir -p test/results
-  #           mv junit.xml test/results
-  #     - store_artifacts:
-  #         path: ./test/results
-  #         prefix: test
-  #     - store_test_results:
-  #         path: ./test/results
+  test-unit:
+    executor: default-docker
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - checkout
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Execute unit tests
+          command: npm run test:unit
+      - run:
+          name: prepare test/results
+          command: |
+            mkdir -p test/results
+            mv junit.xml test/results
+      - store_artifacts:
+          path: ./test/results
+          prefix: test
+      - store_test_results:
+          path: ./test/results
 
-  # test-coverage:
-  #   executor: default-docker
-  #   steps:
-  #     - run:
-  #         name: Install general dependencies
-  #         command: *defaults_Dependencies
-  #     - checkout
-  #     - run:
-  #         name: Install AWS CLI dependencies
-  #         command: *defaults_awsCliDependencies
-  #     - restore_cache:
-  #         keys:
-  #           - dependency-cache-{{ checksum "package-lock.json" }}
-  #     - run:
-  #         name: Execute code coverage check
-  #         command: npm run test:coverage-check
-  #     - store_artifacts:
-  #         path: coverage
-  #         prefix: test
-  #     - store_test_results:
-  #         path: coverage
-  #     - run:
-  #         name: Copy code coverage to SonarQube
-  #         command: |
-  #           if [ "${CIRCLE_BRANCH}" == "master" ];
-  #           then
-  #               echo "Sending lcov.info to SonarQube..."
-  #               aws s3 cp coverage/lcov.info $AWS_S3_DIR_SONARQUBE/$CIRCLE_PROJECT_REPONAME/lcov.info
-  #           else
-  #               echo "Not a release (env CIRCLE_BRANCH != 'master'), skipping sending lcov.info to SonarQube."
-  #           fi
+  test-coverage:
+    executor: default-docker
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - checkout
+      - run:
+          name: Install AWS CLI dependencies
+          command: *defaults_awsCliDependencies
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: Execute code coverage check
+          command: npm run test:coverage-check
+      - store_artifacts:
+          path: coverage
+          prefix: test
+      - store_test_results:
+          path: coverage
+      - run:
+          name: Copy code coverage to SonarQube
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ];
+            then
+                echo "Sending lcov.info to SonarQube..."
+                aws s3 cp coverage/lcov.info $AWS_S3_DIR_SONARQUBE/$CIRCLE_PROJECT_REPONAME/lcov.info
+            else
+                echo "Not a release (env CIRCLE_BRANCH != 'master'), skipping sending lcov.info to SonarQube."
+            fi
 
   linting-check:
     executor: default-docker
@@ -336,13 +336,13 @@ workflows:
             tags:
               only: /.*/
 
-      # - test-unit:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #     filters:
-      #       tags:
-      #         only: /.*/
+      - test-unit:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
 
       - vulnerability-check:
           context: org-global
@@ -364,13 +364,13 @@ workflows:
                 - /feature*/
                 - /bugfix*/
 
-      # - test-coverage:
-      #     context: org-global
-      #     requires:
-      #       - setup
-      #     filters:
-      #       tags:
-      #         only: /.*/
+      - test-coverage:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
 
       - linting-check:
           context: org-global
@@ -413,8 +413,8 @@ workflows:
             - build-local
             # - license-scan
             # - image-scan
-            # - test-unit
-            # - test-coverage
+            - test-unit
+            - test-coverage
             - audit-licenses
             - linting-check
             - vulnerability-check
