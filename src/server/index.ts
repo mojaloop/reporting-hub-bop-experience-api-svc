@@ -41,7 +41,7 @@ import Logger from '@mojaloop/central-services-logger'
 const app = express()
 let appInstance: http.Server
 
-async function setProxyBody (proxyReq: any, body: any) {
+function setProxyBody (proxyReq: any, body: any) {
   const newBody = JSON.stringify(body)
   proxyReq.setHeader('content-length', newBody.length)
   proxyReq.write(newBody)
