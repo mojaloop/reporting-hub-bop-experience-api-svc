@@ -28,9 +28,9 @@
  --------------
  ******/
 /* eslint-disable import/first */
-
-import { addUserToExtensionList } from '../../../../src/server/modifiers/central-admin'
+import CentralAdmin from '../../../../src/server/modifiers/central-admin'
 // jest.mock('../../src/server')
+jest.mock('@mojaloop/event-sdk')
 
 const sampleHeaders = {
   header1: 'headervalue1'
@@ -41,7 +41,7 @@ const sampleBody = {
 
 describe('addUserToExtensionList', () => {
   it('should return modified request', async () => {
-    const result = addUserToExtensionList('123', sampleHeaders, sampleBody)
+    const result = CentralAdmin.addUserToExtensionList('123', sampleHeaders, sampleBody)
     expect(result).toHaveProperty('headers')
     expect(result).toHaveProperty('body')
     expect(result.headers).toHaveProperty('header1')

@@ -32,6 +32,10 @@
 import ServiceServer from '../../../src/server'
 import request from 'supertest'
 // jest.mock('http-proxy-middleware')
+jest.mock('@mojaloop/event-sdk')
+import {
+  Tracer
+} from '@mojaloop/event-sdk'
 
 const proxyReq = {
   setHeader: jest.fn(),
@@ -46,15 +50,22 @@ jest.mock('http-proxy-middleware', () => {
     createProxyMiddleware: (centralAdminOptions: any) => {
       return jest.fn((req, res, next) => {
         const newReq = { ...req }
+        const sampleRes = {
+          statusCode: 200,
+          statusMessage: 'OK',
+          headers: {}
+        }
         newReq.path = '/' + newReq.params[0]
         if (mockError) {
           centralAdminOptions.onError(res)
         } else {
           centralAdminOptions.onProxyReq(proxyReq, newReq)
+          centralAdminOptions.onProxyRes(sampleRes, newReq, res)
         }
         next()
       })
-    }
+    },
+    fixRequestBody: jest.fn()
   }
 })
 
@@ -77,7 +88,7 @@ describe('start', () => {
     expect(jsonResult).toHaveProperty('status')
     expect(jsonResult.status).toEqual('OK')
   })
-  it('central-admin/participants endpoint should work', async () => {
+  it('central-admin/participants/*/accounts/* endpoint should work', async () => {
     const app = ServiceServer.getApp()
     const samplePayload = {
       someKey: 'SomeValue'
@@ -86,6 +97,7 @@ describe('start', () => {
       .post('/central-admin/participants/1/accounts/1')
       .send(samplePayload)
       .set('X-email', 'abc@abc.com')
+    expect(Tracer.createSpan).toHaveBeenCalled()
     expect(proxyReq.setHeader).toHaveBeenCalled()
     expect(proxyReq.write).toHaveBeenCalled()
     const parsedPassedReq = JSON.parse(proxyReq.write.mock.calls[0][0])
@@ -99,13 +111,36 @@ describe('start', () => {
       ])
     )
   })
+  it('central-admin/participants/*/limits endpoint should work', async () => {
+    const app = ServiceServer.getApp()
+    const samplePayload = {
+      someKey: 'SomeValue'
+    }
+    await request(app)
+      .put('/central-admin/participants/1/limits')
+      .send(samplePayload)
+      .set('X-email', 'abc@abc.com')
+    expect(Tracer.createSpan).toHaveBeenCalled()
+  })
+  it('central-admin/participants/* endpoint should work', async () => {
+    const app = ServiceServer.getApp()
+    const samplePayload = {
+      someKey: 'SomeValue'
+    }
+    await request(app)
+      .put('/central-admin/participants/1')
+      .send(samplePayload)
+      .set('X-email', 'abc@abc.com')
+    expect(Tracer.createSpan).toHaveBeenCalled()
+  })
+
   it('central-admin/participants endpoint with empty body', async () => {
     const app = ServiceServer.getApp()
     const result = await request(app)
       .post('/central-admin/participants/1/accounts/1')
       .set('X-email', 'abc@abc.com')
     expect(proxyReq.setHeader).not.toHaveBeenCalled()
-    expect(result.status).toEqual(404)
+    expect(result.status).toEqual(500)
   })
   it('central-admin/participants endpoint on error callback', async () => {
     const app = ServiceServer.getApp()

@@ -27,6 +27,28 @@
  --------------
  ******/
 
+import {
+  Tracer,
+  AuditEventAction
+} from '@mojaloop/event-sdk'
+
+enum MessageType {
+  request = 'request',
+  response = 'response',
+  error = 'error'
+}
+
+interface CentralAdminEventContent {
+  params: any;
+  path: string;
+  method: string;
+  headers: any;
+  payload: any;
+  actionType: string;
+  messageType: string;
+  response: any;
+}
+
 interface ModifiedRequest {
   headers: any;
   body: any;
@@ -52,6 +74,59 @@ const addUserToExtensionList = (userid: string, headers: any, body: any): Modifi
   }
 }
 
-export {
-  addUserToExtensionList
+const _handleAuditEvent = (req: any, res: any, messageType: string, eventType: string): void => {
+  if (!req.span) {
+    req.span = Tracer.createSpan('central-ledger-admin-request')
+  }
+  const content: CentralAdminEventContent = {
+    params: {},
+    path: req.path,
+    method: req.method,
+    headers: req.headers,
+    payload: req.body,
+    actionType: '',
+    messageType,
+    response: res
+  }
+
+  // Regular expressions for various API resources
+  // eslint-disable-next-line prefer-regex-literals
+  const adjustParticipantLimitsRE = new RegExp('^/participants/(.*)/limits$')
+  // eslint-disable-next-line prefer-regex-literals
+  const updateParticipantDetailsRE = new RegExp('^/participants/(.*)$')
+
+  if (adjustParticipantLimitsRE.test(req.path) && req.method === 'PUT') {
+    const parsedArray = adjustParticipantLimitsRE.exec(req.path)
+    req.span.audit({
+      ...content,
+      actionType: 'AdjustParticipantLimits',
+      params: parsedArray ? { participant: parsedArray[1] } : {}
+    }, eventType)
+  } else if (updateParticipantDetailsRE.test(req.path) && req.method === 'PUT') {
+    const parsedArray = updateParticipantDetailsRE.exec(req.path)
+    req.span.audit({
+      ...content,
+      actionType: 'UpdateParticipantDetails',
+      params: parsedArray ? { participant: parsedArray[1] } : {}
+    }, eventType)
+  }
+}
+
+const handleRequestEvent = (req: any): void => {
+  _handleAuditEvent(req, null, MessageType.request, AuditEventAction.start)
+}
+
+const handleResponseEvent = (req: any, res: any): void => {
+  _handleAuditEvent(req, res, MessageType.response, AuditEventAction.finish)
+}
+
+const handleErrorResponseEvent = (req: any, errorObj: any): void => {
+  _handleAuditEvent(req, errorObj, MessageType.error, AuditEventAction.finish)
+}
+
+export default {
+  addUserToExtensionList,
+  handleRequestEvent,
+  handleResponseEvent,
+  handleErrorResponseEvent
 }

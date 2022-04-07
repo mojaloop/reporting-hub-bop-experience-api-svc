@@ -32,10 +32,10 @@
 /// <reference path="../../ambient.d.ts"/>
 import express from 'express'
 import http from 'http'
-import { createProxyMiddleware } from 'http-proxy-middleware'
+import { createProxyMiddleware, fixRequestBody, responseInterceptor } from 'http-proxy-middleware'
 
 import Config from '../shared/config'
-import { addUserToExtensionList } from './modifiers/central-admin'
+import CentralAdmin from './modifiers/central-admin'
 import Logger from '@mojaloop/central-services-logger'
 
 const app = express()
@@ -51,11 +51,13 @@ async function setProxyBody (proxyReq: any, body: any) {
 function getUserId (headers: any) {
   return headers['x-email']
 }
+
 // proxy middleware options
 const commonOptions = {
   changeOrigin: true,
   logLevel: <'error' | 'debug' | 'info' | 'warn' | 'silent' | undefined>'debug',
-  proxyTimeout: Config.PROXY_TIMEOUT
+  proxyTimeout: Config.PROXY_TIMEOUT,
+  selfHandleResponse: true
 }
 const centralAdminOptions = {
   ...commonOptions,
@@ -63,21 +65,40 @@ const centralAdminOptions = {
   pathRewrite: {
     '^/central-admin': ''
   },
-  onError: function (_err: any, _req: any, res: any) {
+  onError: function (err: any, req: any, res: any) {
     res.writeHead(500, {
       'Content-Type': 'text/plain'
     })
     res.end('Something went wrong while proxying the request.')
+    CentralAdmin.handleErrorResponseEvent(req, {
+      errorCode: err.code,
+      errorMessage: err.message
+    })
   },
   onProxyReq: function (proxyReq: any, req: any) {
+    fixRequestBody(proxyReq, req)
     if (!req.body || !Object.keys(req.body).length) {
       return
     }
     const userid = getUserId(req.headers)
+    CentralAdmin.handleRequestEvent(req)
     if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
-      const { body } = addUserToExtensionList(userid, req.headers, req.body)
+      const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
       setProxyBody(proxyReq, body)
     }
+  },
+  onProxyRes: function (proxyRes: any, req: any, res: any) {
+    const interceptFn = responseInterceptor(async (responseBuffer, proxyRes, req) => {
+      const responseBody = responseBuffer.toString('utf8')
+      CentralAdmin.handleResponseEvent(req, {
+        statusCode: proxyRes.statusCode,
+        statusMessage: proxyRes.statusMessage,
+        headers: proxyRes.headers,
+        payload: responseBody
+      })
+      return responseBody
+    })
+    return interceptFn(proxyRes, req, res)
   }
 }
 

@@ -111,3 +111,4 @@ declare module '@mojaloop/central-services-error-handling' {
 declare module '@hapi/good'
 declare module 'hapi-openapi'
 declare module 'blipp'
+declare module '@mojaloop/event-sdk'

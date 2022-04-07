@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/reporting-hub-bop-experience-api-svc",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Experience API for business operations framework",
   "author": "Mojaloop",
   "contributors": [
@@ -28,13 +28,14 @@
     "@mojaloop/central-services-logger": "10.6.2",
     "@mojaloop/central-services-metrics": "11.0.0",
     "@mojaloop/central-services-shared": "^15.1.0",
-    "@mojaloop/event-sdk": "10.7.1",
+    "@mojaloop/event-sdk": "^10.7.1",
     "express": "^4.17.2",
     "http-proxy-middleware": "^2.0.3",
     "parse-strings-in-object": "^1.4.0",
     "rc": "^1.2.8",
+    "ts-node": "^10.1.0",
     "typescript": "^4.2.3",
-    "ts-node": "^10.1.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
@@ -42,6 +43,7 @@
     "@types/node": "^16.10.1",
     "@types/rc": "^1.2.0",
     "@types/supertest": "^2.0.11",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
     "eslint": "^7.27.0",
