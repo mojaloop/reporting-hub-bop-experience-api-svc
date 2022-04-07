@@ -76,16 +76,19 @@ const centralAdminOptions = {
     })
   },
   onProxyReq: function (proxyReq: any, req: any) {
-    fixRequestBody(proxyReq, req)
     if (!req.body || !Object.keys(req.body).length) {
       return
     }
-    const userid = getUserId(req.headers)
-    CentralAdmin.handleRequestEvent(req)
     if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
-      const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
-      setProxyBody(proxyReq, body)
+      const userid = getUserId(req.headers)
+      if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
+        const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
+        setProxyBody(proxyReq, body)
+      }
+    } else {
+      fixRequestBody(proxyReq, req)
     }
+    CentralAdmin.handleRequestEvent(req)
   },
   onProxyRes: function (proxyRes: any, req: any, res: any) {
     const interceptFn = responseInterceptor(async (responseBuffer, proxyRes, req) => {
