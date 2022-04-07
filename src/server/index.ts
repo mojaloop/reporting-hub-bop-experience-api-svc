@@ -87,16 +87,19 @@ const centralAdminOptions = {
       setProxyBody(proxyReq, body)
     }
   },
-  onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, _res) => {
-    const responseBody = responseBuffer.toString('utf8')
-    CentralAdmin.handleResponseEvent(req, {
-      statusCode: proxyRes.statusCode,
-      statusMessage: proxyRes.statusMessage,
-      headers: proxyRes.headers,
-      payload: responseBody
+  onProxyRes: function (proxyRes: any, req: any, res: any) {
+    const interceptFn = responseInterceptor(async (responseBuffer, proxyRes, req) => {
+      const responseBody = responseBuffer.toString('utf8')
+      CentralAdmin.handleResponseEvent(req, {
+        statusCode: proxyRes.statusCode,
+        statusMessage: proxyRes.statusMessage,
+        headers: proxyRes.headers,
+        payload: responseBody
+      })
+      return responseBody
     })
-    return responseBody
-  })
+    return interceptFn(proxyRes, req, res)
+  }
 }
 
 async function run (): Promise<void> {
