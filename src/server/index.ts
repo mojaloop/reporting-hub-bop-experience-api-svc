@@ -93,11 +93,15 @@ const centralAdminOptions = {
   onProxyRes: function (proxyRes: any, req: any, res: any) {
     const interceptFn = responseInterceptor(async (responseBuffer, proxyRes, req) => {
       const responseBody = responseBuffer.toString('utf8')
+      let responseObject = responseBody
+      try {
+        responseObject = JSON.parse(responseObject)
+      } catch (err) {}
       CentralAdmin.handleResponseEvent(req, {
         statusCode: proxyRes.statusCode,
         statusMessage: proxyRes.statusMessage,
         headers: proxyRes.headers,
-        payload: responseBody
+        payload: responseObject
       })
       return responseBody
     })
