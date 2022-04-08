@@ -94,6 +94,8 @@ const _handleAuditEvent = (req: any, res: any, messageType: string, eventType: s
   const adjustParticipantLimitsRE = new RegExp('^/participants/(.*)/limits$')
   // eslint-disable-next-line prefer-regex-literals
   const updateParticipantDetailsRE = new RegExp('^/participants/(.*)$')
+  // eslint-disable-next-line prefer-regex-literals
+  const updateParticipantAccountDetailsRE = new RegExp('^/participants/(.*)/accounts/(.*)$')
 
   if (adjustParticipantLimitsRE.test(req.path) && req.method === 'PUT') {
     const parsedArray = adjustParticipantLimitsRE.exec(req.path)
@@ -108,6 +110,13 @@ const _handleAuditEvent = (req: any, res: any, messageType: string, eventType: s
       ...content,
       actionType: 'UpdateParticipantDetails',
       params: parsedArray ? { participant: parsedArray[1] } : {}
+    }, eventType)
+  } else if (updateParticipantAccountDetailsRE.test(req.path) && req.method === 'PUT') {
+    const parsedArray = updateParticipantAccountDetailsRE.exec(req.path)
+    req.span.audit({
+      ...content,
+      actionType: 'UpdateParticipantAccountDetails',
+      params: parsedArray ? { participant: parsedArray[1], account: parsedArray[2] } : {}
     }, eventType)
   }
 }
