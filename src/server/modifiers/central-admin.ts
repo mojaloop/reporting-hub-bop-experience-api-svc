@@ -93,9 +93,9 @@ const _handleAuditEvent = (req: any, res: any, messageType: string, eventType: s
   // eslint-disable-next-line prefer-regex-literals
   const adjustParticipantLimitsRE = new RegExp('^/participants/(.*)/limits$')
   // eslint-disable-next-line prefer-regex-literals
-  const updateParticipantDetailsRE = new RegExp('^/participants/(.*)$')
+  const updateParticipantDetailsRE = new RegExp('^/participants/([^/]+)$')
   // eslint-disable-next-line prefer-regex-literals
-  const updateParticipantAccountDetailsRE = new RegExp('^/participants/(.*)/accounts/(.*)$')
+  const updateParticipantAccountDetailsRE = new RegExp('^/participants/([^/]+)/accounts/([^/]+)$')
 
   if (adjustParticipantLimitsRE.test(req.path) && req.method === 'PUT') {
     const parsedArray = adjustParticipantLimitsRE.exec(req.path)
