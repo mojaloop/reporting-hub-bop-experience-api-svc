@@ -133,6 +133,17 @@ describe('start', () => {
       .set('X-email', 'abc@abc.com')
     expect(Tracer.createSpan).toHaveBeenCalled()
   })
+  it('central-admin/participants/*/accounts/* endpoint should work', async () => {
+    const app = ServiceServer.getApp()
+    const samplePayload = {
+      someKey: 'SomeValue'
+    }
+    await request(app)
+      .put('/central-admin/participants/1/accounts/1')
+      .send(samplePayload)
+      .set('X-email', 'abc@abc.com')
+    expect(Tracer.createSpan).toHaveBeenCalled()
+  })
 
   it('central-admin/participants endpoint with empty body', async () => {
     const app = ServiceServer.getApp()
