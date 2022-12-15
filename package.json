@@ -29,7 +29,7 @@
     "@mojaloop/central-services-metrics": "11.0.0",
     "@mojaloop/central-services-shared": "^15.1.0",
     "@mojaloop/event-sdk": "^10.7.1",
-    "express": "^4.17.2",
+    "express": "^4.17.3",
     "http-proxy-middleware": "^2.0.3",
     "parse-strings-in-object": "^1.4.0",
     "rc": "^1.2.8",
