@@ -162,4 +162,29 @@ describe('start', () => {
     expect(proxyReq.setHeader).not.toHaveBeenCalled()
     expect(result.status).toEqual(500)
   })
+  
+  it('central-admin/transfers endpoint should add email to extension list', async () => {
+    const app = ServiceServer.getApp()
+    const samplePayload = {
+      transferId: '123456',
+      someKey: 'SomeValue'
+    }
+    await request(app)
+      .post('/central-admin/transfers')
+      .send(samplePayload)
+      .set('X-email', 'abc@abc.com')
+    expect(Tracer.createSpan).toHaveBeenCalled()
+    expect(proxyReq.setHeader).toHaveBeenCalled()
+    expect(proxyReq.write).toHaveBeenCalled()
+    const parsedPassedReq = JSON.parse(proxyReq.write.mock.calls[0][0])
+    expect(parsedPassedReq).toHaveProperty('extensionList')
+    expect(parsedPassedReq.extensionList).toHaveProperty('extension')
+    expect(parsedPassedReq.extensionList.extension).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          key: 'user', value: 'abc@abc.com'
+        })
+      ])
+    )
+  })
 })
