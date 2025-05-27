@@ -80,15 +80,15 @@ const centralAdminOptions = {
       return
     }
     const userid = getUserId(req.headers)
-    
-    // Handle participant account requests
+
+    // Handle different types of requests
     if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
+      // Handle participant account requests
       const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
       setProxyBody(proxyReq, body)
-    } 
-    // Handle transfer requests - add email as extension for settlement audit
-    // This is essential for the settlement audit report to track who initiated transfers
-    else if (req.path.match(/\/transfers.*/g) && userid && req.body.transferId) {
+    } else if (req.path.match(/\/transfers.*/g) && userid && req.body.transferId) {
+      // Handle transfer requests - add email as extension for settlement audit
+      // This is essential for the settlement audit report to track who initiated transfers
       const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
       setProxyBody(proxyReq, body)
     } else {
