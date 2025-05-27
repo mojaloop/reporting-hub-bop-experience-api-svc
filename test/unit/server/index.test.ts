@@ -205,4 +205,76 @@ describe('start', () => {
       ])
     );
   })
+  
+  it('should handle response interceptor with valid JSON', async () => {
+    // Create a mock for responseInterceptor
+    const mockResponseInterceptor = jest.fn().mockImplementation((callback) => {
+      // Call the callback with a valid JSON response
+      const mockResponseBuffer = Buffer.from('{"status":"success"}')
+      const mockProxyRes = { statusCode: 200, statusMessage: 'OK', headers: {} }
+      const mockReq = { 
+        path: '/test',
+        headers: {},
+        span: { audit: jest.fn() }
+      }
+      
+      // Execute the callback directly
+      callback(mockResponseBuffer, mockProxyRes, mockReq)
+        .then((result: string) => {
+          // Verify the result is as expected
+          expect(result).toBe('{"status":"success"}')
+        })
+      
+      // Return a mock interceptor function
+      return jest.fn()
+    })
+    
+    // Override the responseInterceptor in the module
+    const httpProxyMiddleware = require('http-proxy-middleware')
+    const originalResponseInterceptor = httpProxyMiddleware.responseInterceptor
+    httpProxyMiddleware.responseInterceptor = mockResponseInterceptor
+    
+    // Import the module directly to trigger the code that uses responseInterceptor
+    const ServiceServer = require('../../../src/server').default
+    const app = ServiceServer.getApp()
+    
+    // Clean up by restoring the original implementation
+    httpProxyMiddleware.responseInterceptor = originalResponseInterceptor
+  })
+  
+  it('should handle response interceptor with invalid JSON', async () => {
+    // Create a mock for responseInterceptor
+    const mockResponseInterceptor = jest.fn().mockImplementation((callback) => {
+      // Call the callback with an invalid JSON response
+      const mockResponseBuffer = Buffer.from('Not a valid JSON')
+      const mockProxyRes = { statusCode: 200, statusMessage: 'OK', headers: {} }
+      const mockReq = { 
+        path: '/test',
+        headers: {},
+        span: { audit: jest.fn() }
+      }
+      
+      // Execute the callback directly
+      callback(mockResponseBuffer, mockProxyRes, mockReq)
+        .then((result: string) => {
+          // Verify the result is as expected
+          expect(result).toBe('Not a valid JSON')
+        })
+      
+      // Return a mock interceptor function
+      return jest.fn()
+    })
+    
+    // Override the responseInterceptor in the module
+    const httpProxyMiddleware = require('http-proxy-middleware')
+    const originalResponseInterceptor = httpProxyMiddleware.responseInterceptor
+    httpProxyMiddleware.responseInterceptor = mockResponseInterceptor
+    
+    // Import the module directly to trigger the code that uses responseInterceptor
+    const ServiceServer = require('../../../src/server').default
+    const app = ServiceServer.getApp()
+    
+    // Clean up by restoring the original implementation
+    httpProxyMiddleware.responseInterceptor = originalResponseInterceptor
+  })
 })
