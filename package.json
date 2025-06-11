@@ -9,7 +9,7 @@
   "repository": "https://github.com/mojaloop/reporting-hub-bop-experience-api-svc",
   "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register -P ./tsconfig.json src/index.ts",
+    "start": "node dist/index.js",
     "dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node' src/index.ts",
     "lint": "eslint ./src/**/*.ts *.js",
     "lint:fix": "eslint --fix ./src/**/*.ts *.js",
@@ -41,7 +41,6 @@
     "http-proxy-middleware": "3.0.5",
     "parse-strings-in-object": "^1.6.0",
     "rc": "^1.2.8",
-    "ts-node": "^10.9.2",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
