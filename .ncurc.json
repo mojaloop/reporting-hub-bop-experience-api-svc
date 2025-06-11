@@ -3,6 +3,6 @@
     "eslint",
     "eslint-plugin-promise",
     "jest",
-    "event-sdk"
+    "@mojaloop/event-sdk"
   ]
 }
