@@ -31,6 +31,7 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../ambient.d.ts"/>
 import express from 'express'
+import type { Request, Response } from 'express';
 import http from 'http'
 import { createProxyMiddleware, fixRequestBody, responseInterceptor } from 'http-proxy-middleware'
 
@@ -57,7 +58,7 @@ const commonOptions = {
   changeOrigin: true,
   logLevel: <'error' | 'debug' | 'info' | 'warn' | 'silent' | undefined>'debug',
   proxyTimeout: Config.PROXY_TIMEOUT,
-  selfHandleResponse: true
+  selfHandleResponse: false
 }
 const centralAdminOptions = {
   ...commonOptions,
@@ -116,10 +117,11 @@ const centralAdminOptions = {
 }
 
 async function run (): Promise<void> {
+
   // eslint-disable-next-line import/no-named-as-default-member
   app.use(express.json())
   // app.use(express.urlencoded())
-  app.use('/central-admin/*', createProxyMiddleware(centralAdminOptions))
+  app.use('/central-admin', createProxyMiddleware<Request, Response>(centralAdminOptions))
   // Health Endpoint
   app.get('/health', (_req, res) => {
     res.json({
@@ -131,7 +133,9 @@ async function run (): Promise<void> {
 }
 
 async function terminate (): Promise<void> {
-  appInstance.close()
+  if(appInstance) {
+    appInstance.close()
+  }
   Logger.info('service stopped')
 }
 

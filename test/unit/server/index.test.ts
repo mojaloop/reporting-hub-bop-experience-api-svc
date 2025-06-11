@@ -49,7 +49,10 @@ jest.mock('http-proxy-middleware', () => {
   return {
     createProxyMiddleware: (centralAdminOptions: any) => {
       return jest.fn((req, res, next) => {
+        // This only copies properties (including non-function properties), but does not copy prototype methods or functions attached to the prototype chain.
         const newReq = { ...req }
+        newReq.headers = req.headers
+        newReq.path = req.path
         const sampleRes = {
           statusCode: 200,
           statusMessage: 'OK',
@@ -59,9 +62,6 @@ jest.mock('http-proxy-middleware', () => {
         // Extract the path from URL for both participants and transfers endpoints
         if (req.path.includes('/central-admin/transfers')) {
           newReq.path = '/transfers'
-        } else {
-          // Original behavior for other endpoints
-          newReq.path = '/' + newReq.params[0]
         }
         
         if (mockError) {
