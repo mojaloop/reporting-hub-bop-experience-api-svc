@@ -1,4 +1,4 @@
-FROM node:14.18.1-alpine as builder
+FROM node:22.16.0-alpine as builder
 USER root
 
 WORKDIR /opt/reporting-hub-bop-experience-api-svc
@@ -17,7 +17,7 @@ COPY . .
 # cleanup
 RUN apk del build-dependencies
 
-FROM node:14.18.1-alpine
+FROM node:22.16.0-alpine
 WORKDIR /opt/reporting-hub-bop-experience-api-svc
 
 # Create empty log file & link stdout to the application log file
