@@ -14,6 +14,8 @@
     "lint": "eslint ./src/**/*.ts *.js",
     "lint:fix": "eslint --fix ./src/**/*.ts *.js",
     "test": "npm run test:unit",
+    "build": "npm -s run clean && tsc",
+    "clean": "rm -rf dist",
     "test:coverage": "jest --coverage --coverageThreshold='{}' --testMatch '**/test/unit/**/*.(test|spec).ts'",
     "test:coverage-check": "jest -w 1 --coverage --testMatch '**/test/unit/**/*.(test|spec).ts'",
     "test:integration": "jest --testMatch '**/test/integration/**/*.(test|spec).ts' --runInBand",
@@ -37,7 +39,6 @@
     "parse-strings-in-object": "^1.6.0",
     "rc": "^1.2.8",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
@@ -68,7 +69,8 @@
     "supertest": "^7.1.1",
     "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0"
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "@mojaloop/central-services-error-handling": "13.1.0",
