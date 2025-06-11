@@ -31,7 +31,7 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../ambient.d.ts"/>
 import express from 'express'
-import type { Request, Response } from 'express';
+import type { Request, Response } from 'express'
 import http from 'http'
 import { createProxyMiddleware, fixRequestBody, responseInterceptor } from 'http-proxy-middleware'
 
@@ -103,7 +103,9 @@ const centralAdminOptions = {
       let responseObject = responseBody
       try {
         responseObject = JSON.parse(responseObject)
-      } catch (err) {}
+      } catch (err: any) {
+        Logger.error(`Failed to parse response body: ${err.message}`, { responseBody })
+      }
       CentralAdmin.handleResponseEvent(req, {
         statusCode: proxyRes.statusCode,
         statusMessage: proxyRes.statusMessage,
@@ -117,7 +119,6 @@ const centralAdminOptions = {
 }
 
 async function run (): Promise<void> {
-
   // eslint-disable-next-line import/no-named-as-default-member
   app.use(express.json())
   // app.use(express.urlencoded())
@@ -133,7 +134,7 @@ async function run (): Promise<void> {
 }
 
 async function terminate (): Promise<void> {
-  if(appInstance) {
+  if (appInstance) {
     appInstance.close()
   }
   Logger.info('service stopped')

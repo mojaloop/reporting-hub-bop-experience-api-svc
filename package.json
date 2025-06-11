@@ -33,7 +33,7 @@
     "@mojaloop/central-services-logger": "11.9.0",
     "@mojaloop/central-services-metrics": "12.6.0",
     "@mojaloop/central-services-shared": "18.28.0",
-    "@mojaloop/event-sdk": "14.5.1",
+    "@mojaloop/event-sdk": "14.5.2",
     "express": "^5.1.0",
     "http-proxy-middleware": "3.0.5",
     "parse-strings-in-object": "^1.6.0",
