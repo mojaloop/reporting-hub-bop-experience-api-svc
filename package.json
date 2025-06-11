@@ -19,6 +19,7 @@
     "test:integration": "jest --testMatch '**/test/integration/**/*.(test|spec).ts' --runInBand",
     "test:junit": "jest --reporters=default --reporters=jest-junit",
     "test:unit": "jest -w 1 --testMatch '**/test/unit/**/*.(test|spec).ts'",
+    "test:xunit": "JEST_JUNIT_OUTPUT_DIR=./test/reports/ JEST_JUNIT_OUTPUT_NAME=xunit.xml npm run test:unit -- --reporters=jest-junit",
     "audit:resolve": "SHELL=sh resolve-audit --production",
     "audit:check": "SHELL=sh check-audit --production",
     "dep:check": "ncu -e 2",
