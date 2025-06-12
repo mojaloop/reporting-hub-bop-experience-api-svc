@@ -1,8 +1,2 @@
 {
-  "reject": [
-    "eslint",
-    "eslint-plugin-promise",
-    "jest",
-    "@mojaloop/event-sdk"
-  ]
 }
