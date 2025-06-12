@@ -24,7 +24,6 @@ module.exports = {
   },
   rules: {
     indent: 'off',
-    '@typescript-eslint/indent': ['error', 2],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-var-requires': 'error',
     'no-console': 'off',
@@ -48,7 +47,7 @@ module.exports = {
     {
       // Disable some rules that we abuse in unit tests.
       files: [
-        'test /**/*.ts',
+        'test/**/*.ts',
       ],
       rules: {
         '@typescript-eslint/explicit-function-return-type': 'off',
@@ -58,8 +57,12 @@ module.exports = {
       files: [
         '*.js'
       ],
+      parserOptions: {
+        project: null
+      },
       rules: {
         '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/no-require-imports': 'off',
       }
     },
   ],

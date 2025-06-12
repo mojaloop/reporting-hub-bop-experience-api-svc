@@ -27,8 +27,9 @@
  --------------
  ******/
 
-import rc from 'rc'
 import parse from 'parse-strings-in-object'
+import rc from 'rc'
+
 import Config from '../../config/default.json'
 import Package from '../../package.json'
 export interface ServiceConfig {

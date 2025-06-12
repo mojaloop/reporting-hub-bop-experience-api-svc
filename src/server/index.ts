@@ -28,15 +28,17 @@
  --------------
  ******/
 // workaround for lack of typescript types for mojaloop dependencies
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../ambient.d.ts"/>
-import express from 'express'
+
 import http from 'http'
+
+import Logger from '@mojaloop/central-services-logger'
+import express, { Request, Response } from 'express'
 import { createProxyMiddleware, fixRequestBody, responseInterceptor } from 'http-proxy-middleware'
 
 import Config from '../shared/config'
+
 import CentralAdmin from './modifiers/central-admin'
-import Logger from '@mojaloop/central-services-logger'
 
 const app = express()
 let appInstance: http.Server
@@ -65,61 +67,64 @@ const centralAdminOptions = {
   pathRewrite: {
     '^/central-admin': ''
   },
-  onError: function (err: any, req: any, res: any) {
-    res.writeHead(500, {
-      'Content-Type': 'text/plain'
-    })
-    res.end('Something went wrong while proxying the request.')
-    CentralAdmin.handleErrorResponseEvent(req, {
-      errorCode: err.code,
-      errorMessage: err.message
-    })
-  },
-  onProxyReq: function (proxyReq: any, req: any) {
-    if (!req.body || !Object.keys(req.body).length) {
-      return
-    }
-    const userid = getUserId(req.headers)
-
-    // Handle different types of requests
-    if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
-      // Handle participant account requests
-      const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
-      setProxyBody(proxyReq, body)
-    } else if (req.path.match(/\/transfers.*/g) && userid && req.body.transferId) {
-      // Handle transfer requests - add email as extension for settlement audit
-      // This is essential for the settlement audit report to track who initiated transfers
-      const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
-      setProxyBody(proxyReq, body)
-    } else {
-      fixRequestBody(proxyReq, req)
-    }
-    CentralAdmin.handleRequestEvent(req)
-  },
-  onProxyRes: function (proxyRes: any, req: any, res: any) {
-    const interceptFn = responseInterceptor(async (responseBuffer, proxyRes, req) => {
-      const responseBody = responseBuffer.toString('utf8')
-      let responseObject = responseBody
-      try {
-        responseObject = JSON.parse(responseObject)
-      } catch (err) {}
-      CentralAdmin.handleResponseEvent(req, {
-        statusCode: proxyRes.statusCode,
-        statusMessage: proxyRes.statusMessage,
-        headers: proxyRes.headers,
-        payload: responseObject
+  on: {
+    error: function (err: any, req: any, res: any) {
+      res.writeHead(500, {
+        'Content-Type': 'text/plain'
       })
-      return responseBody
-    })
-    return interceptFn(proxyRes, req, res)
+      res.end('Something went wrong while proxying the request.')
+      CentralAdmin.handleErrorResponseEvent(req, {
+        errorCode: err.code,
+        errorMessage: err.message
+      })
+    },
+    proxyReq: function (proxyReq: any, req: any) {
+      if (!req.body || !Object.keys(req.body).length) {
+        return
+      }
+      const userid = getUserId(req.headers)
+
+      // Handle different types of requests
+      if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
+        // Handle participant account requests
+        const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
+        setProxyBody(proxyReq, body)
+      } else if (req.path.match(/\/transfers.*/g) && userid && req.body.transferId) {
+        // Handle transfer requests - add email as extension for settlement audit
+        // This is essential for the settlement audit report to track who initiated transfers
+        const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
+        setProxyBody(proxyReq, body)
+      } else {
+        fixRequestBody(proxyReq, req)
+      }
+      CentralAdmin.handleRequestEvent(req)
+    },
+    proxyRes: function (proxyRes: any, req: any, res: any) {
+      const interceptFn = responseInterceptor(async (responseBuffer, proxyRes, req) => {
+        const responseBody = responseBuffer.toString('utf8')
+        let responseObject = responseBody
+        try {
+          responseObject = JSON.parse(responseObject)
+        } catch (err: any) {
+          Logger.error(`Failed to parse response body: ${err.message}`, { responseBody })
+        }
+        CentralAdmin.handleResponseEvent(req, {
+          statusCode: proxyRes.statusCode,
+          statusMessage: proxyRes.statusMessage,
+          headers: proxyRes.headers,
+          payload: responseObject
+        })
+        return responseBody
+      })
+      return interceptFn(proxyRes, req, res)
+    }
   }
 }
 
 async function run (): Promise<void> {
-  // eslint-disable-next-line import/no-named-as-default-member
   app.use(express.json())
   // app.use(express.urlencoded())
-  app.use('/central-admin/*', createProxyMiddleware(centralAdminOptions))
+  app.use('/central-admin', createProxyMiddleware<Request, Response>(centralAdminOptions))
   // Health Endpoint
   app.get('/health', (_req, res) => {
     res.json({
@@ -131,7 +136,9 @@ async function run (): Promise<void> {
 }
 
 async function terminate (): Promise<void> {
-  appInstance.close()
+  if (appInstance) {
+    appInstance.close()
+  }
   Logger.info('service stopped')
 }
 
