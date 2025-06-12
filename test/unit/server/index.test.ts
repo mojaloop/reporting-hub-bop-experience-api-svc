@@ -65,10 +65,10 @@ jest.mock('http-proxy-middleware', () => {
         }
         
         if (mockError) {
-          centralAdminOptions.onError(res)
+          centralAdminOptions.on.error(res)
         } else {
-          centralAdminOptions.onProxyReq(proxyReq, newReq)
-          centralAdminOptions.onProxyRes(sampleRes, newReq, res)
+          centralAdminOptions.on.proxyReq(proxyReq, newReq)
+          centralAdminOptions.on.proxyRes(sampleRes, newReq, res)
         }
         next()
       })

@@ -111,7 +111,7 @@ const _handleAuditEvent = (req: any, res: any, messageType: string, eventType: s
       actionType: 'UpdateParticipantDetails',
       params: parsedArray ? { participant: parsedArray[1] } : {}
     }, eventType)
-  } else if (updateParticipantAccountDetailsRE.test(req.path) && req.method === 'PUT') {
+  } else if (updateParticipantAccountDetailsRE.test(req.path) && (req.method === 'PUT' || req.method === 'POST')) {
     const parsedArray = updateParticipantAccountDetailsRE.exec(req.path)
     req.span.audit({
       ...content,

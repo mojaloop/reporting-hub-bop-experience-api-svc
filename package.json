@@ -9,7 +9,7 @@
   "repository": "https://github.com/mojaloop/reporting-hub-bop-experience-api-svc",
   "main": "src/index.ts",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node' src/index.ts",
     "lint": "eslint ./src/**/*.ts *.js",
     "lint:fix": "eslint --fix ./src/**/*.ts *.js",
@@ -36,7 +36,7 @@
     "@mojaloop/central-services-logger": "11.9.0",
     "@mojaloop/central-services-metrics": "12.6.0",
     "@mojaloop/central-services-shared": "18.28.1",
-    "@mojaloop/event-sdk": "14.5.2",
+    "@mojaloop/event-sdk": "14.6.0",
     "express": "^5.1.0",
     "http-proxy-middleware": "3.0.5",
     "parse-strings-in-object": "^1.6.0",
