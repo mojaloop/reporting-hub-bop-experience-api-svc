@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/reporting-hub-bop-experience-api-svc",
-  "version": "2.0.2-snapshot.4",
+  "version": "2.0.2-snapshot.5",
   "description": "Experience API for business operations framework",
   "author": "Mojaloop",
   "contributors": [
