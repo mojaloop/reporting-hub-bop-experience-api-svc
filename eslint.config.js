@@ -26,7 +26,7 @@ export default [
         ecmaVersion: 2022,
         sourceType: 'module',
         project: 'tsconfig.json',
-        tsconfigRootDir: '.',
+        tsconfigRootDir: process.cwd(),
       },
     },
     plugins: {

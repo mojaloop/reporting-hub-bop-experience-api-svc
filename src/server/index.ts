@@ -32,9 +32,10 @@
 
 import http from 'http'
 
-import Logger from '@mojaloop/central-services-logger'
 import express, { Request, Response } from 'express'
 import { createProxyMiddleware, fixRequestBody, responseInterceptor } from 'http-proxy-middleware'
+
+import { logger } from '~/shared/logger'
 
 import Config from '../shared/config'
 
@@ -79,6 +80,13 @@ const centralAdminOptions = {
       })
     },
     proxyReq: function (proxyReq: any, req: any) {
+      logger.debug('Proxy Request:', {
+        method: req.method,
+        url: req.originalUrl || req.url,
+        headers: req.headers,
+        body: req.body
+      })
+
       if (!req.body || !Object.keys(req.body).length) {
         return
       }
@@ -88,11 +96,13 @@ const centralAdminOptions = {
       if (req.path.match(/\/participants\/.*\/accounts\/.*/g) && req.method === 'POST') {
         // Handle participant account requests
         const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
+        logger.debug('Modified participant account request body:', body)
         setProxyBody(proxyReq, body)
       } else if (req.path.match(/\/transfers.*/g) && userid && req.body.transferId) {
         // Handle transfer requests - add email as extension for settlement audit
         // This is essential for the settlement audit report to track who initiated transfers
         const { body } = CentralAdmin.addUserToExtensionList(userid, req.headers, req.body)
+        logger.debug('Modified transfer request body:', body)
         setProxyBody(proxyReq, body)
       } else {
         fixRequestBody(proxyReq, req)
@@ -106,8 +116,16 @@ const centralAdminOptions = {
         try {
           responseObject = JSON.parse(responseObject)
         } catch (err: any) {
-          Logger.error(`Failed to parse response body: ${err.message}`, { responseBody })
+          logger.error(`Failed to parse response body: ${err.message}`, { responseBody })
         }
+
+        logger.debug('Proxy Response:', {
+          statusCode: proxyRes.statusCode,
+          statusMessage: proxyRes.statusMessage,
+          headers: proxyRes.headers,
+          body: responseObject
+        })
+
         CentralAdmin.handleResponseEvent(req, {
           statusCode: proxyRes.statusCode,
           statusMessage: proxyRes.statusMessage,
@@ -132,14 +150,14 @@ async function run (): Promise<void> {
     })
   })
   appInstance = app.listen(Config.PORT)
-  Logger.info(`service is running on port ${Config.PORT}`)
+  logger.info(`service is running on port ${Config.PORT}`)
 }
 
 async function terminate (): Promise<void> {
   if (appInstance) {
     appInstance.close()
   }
-  Logger.info('service stopped')
+  logger.info('service stopped')
 }
 
 function getApp (): any {
