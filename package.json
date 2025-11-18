@@ -33,7 +33,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@mojaloop/central-services-error-handling": "13.1.0",
-    "@mojaloop/central-services-logger": "11.9.0",
+    "@mojaloop/central-services-logger": "11.10.1",
     "@mojaloop/central-services-metrics": "12.6.0",
     "@mojaloop/central-services-shared": "18.28.2",
     "@mojaloop/central-services-stream": "11.7.0",
