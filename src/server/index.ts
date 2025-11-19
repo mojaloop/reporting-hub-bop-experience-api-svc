@@ -38,6 +38,7 @@ import { createProxyMiddleware, fixRequestBody, responseInterceptor } from 'http
 import { logger } from '~/shared/logger'
 
 import Config from '../shared/config'
+import { logger } from '../shared/logger'
 
 import CentralAdmin from './modifiers/central-admin'
 
