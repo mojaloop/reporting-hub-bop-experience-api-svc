@@ -79,18 +79,8 @@ const centralAdminOptions = {
       })
     },
     proxyReq: function (proxyReq: any, req: any) {
-      logger.debug('Proxy Request (proxyReq):', {
-        method: proxyReq.method,
-        path: proxyReq.path,
-        headers: proxyReq.getHeaders ? proxyReq.getHeaders() : proxyReq._headers
-      })
-
-      logger.debug('Proxy Request (req):', {
-        method: req.method,
-        url: req.originalUrl || req.url,
-        headers: req.headers,
-        body: req.body
-      })
+      logger.debug('Proxy Request (proxyReq):', proxyReq)
+      logger.debug('Proxy Request (req):', req)
 
       if (!req.body || !Object.keys(req.body).length) {
         return
@@ -115,6 +105,8 @@ const centralAdminOptions = {
       CentralAdmin.handleRequestEvent(req)
     },
     proxyRes: function (proxyRes: any, req: any, res: any) {
+      logger.debug('Proxy Response (proxyRes):', proxyRes)
+      logger.debug('Proxy Response (res):', res)
       const interceptFn = responseInterceptor(async (responseBuffer, proxyRes, req) => {
         const responseBody = responseBuffer.toString('utf8')
         let responseObject = responseBody
@@ -123,18 +115,6 @@ const centralAdminOptions = {
         } catch (err: any) {
           logger.error(`Failed to parse response body: ${err.message}`, { responseBody })
         }
-
-        logger.debug('Proxy Response (proxyRes):', {
-          statusCode: proxyRes.statusCode,
-          statusMessage: proxyRes.statusMessage,
-          headers: proxyRes.headers,
-          body: responseObject
-        })
-        logger.debug('Proxy Response (res):', {
-          statusCode: res.statusCode,
-          statusMessage: res.statusMessage,
-          headers: res.getHeaders ? res.getHeaders() : res._headers
-        })
 
         CentralAdmin.handleResponseEvent(req, {
           statusCode: proxyRes.statusCode,
