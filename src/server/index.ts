@@ -35,6 +35,8 @@ import http from 'http'
 import express, { Request, Response } from 'express'
 import { createProxyMiddleware, fixRequestBody, responseInterceptor } from 'http-proxy-middleware'
 
+import { logger } from '~/shared/logger'
+
 import Config from '../shared/config'
 import { logger } from '../shared/logger'
 
