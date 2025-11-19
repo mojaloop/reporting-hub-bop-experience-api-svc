@@ -79,7 +79,13 @@ const centralAdminOptions = {
       })
     },
     proxyReq: function (proxyReq: any, req: any) {
-      logger.debug('Proxy Request:', {
+      logger.debug('Proxy Request (proxyReq):', {
+        method: proxyReq.method,
+        path: proxyReq.path,
+        headers: proxyReq.getHeaders ? proxyReq.getHeaders() : proxyReq._headers
+      })
+
+      logger.debug('Proxy Request (req):', {
         method: req.method,
         url: req.originalUrl || req.url,
         headers: req.headers,
@@ -118,11 +124,16 @@ const centralAdminOptions = {
           logger.error(`Failed to parse response body: ${err.message}`, { responseBody })
         }
 
-        logger.debug('Proxy Response:', {
+        logger.debug('Proxy Response (proxyRes):', {
           statusCode: proxyRes.statusCode,
           statusMessage: proxyRes.statusMessage,
           headers: proxyRes.headers,
           body: responseObject
+        })
+        logger.debug('Proxy Response (res):', {
+          statusCode: res.statusCode,
+          statusMessage: res.statusMessage,
+          headers: res.getHeaders ? res.getHeaders() : res._headers
         })
 
         CentralAdmin.handleResponseEvent(req, {
@@ -142,7 +153,7 @@ async function run (): Promise<void> {
   app.use(express.json())
   // app.use(express.urlencoded())
   app.use((req, _res, next) => {
-    logger.info(`Incoming request: ${req.method} ${req.originalUrl}`, { headers: req.headers, body: req.body })
+    logger.debug(`Incoming request: ${req.method} ${req.originalUrl}`, { headers: req.headers, body: req.body })
     next()
   })
   app.use('/central-admin', createProxyMiddleware<Request, Response>(centralAdminOptions))
