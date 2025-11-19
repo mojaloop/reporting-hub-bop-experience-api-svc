@@ -141,6 +141,10 @@ const centralAdminOptions = {
 async function run (): Promise<void> {
   app.use(express.json())
   // app.use(express.urlencoded())
+  app.use((req, res, next) => {
+    logger.info(`Incoming request: ${req.method} ${req.originalUrl}`, { headers: req.headers, body: req.body });
+    next();
+  });
   app.use('/central-admin', createProxyMiddleware<Request, Response>(centralAdminOptions))
   // Health Endpoint
   app.get('/health', (_req, res) => {
