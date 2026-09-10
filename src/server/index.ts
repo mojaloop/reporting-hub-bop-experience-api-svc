@@ -64,9 +64,6 @@ const commonOptions = {
 const centralAdminOptions = {
   ...commonOptions,
   target: Config.CENTRAL_ADMIN_URL,
-  pathRewrite: {
-    '^/central-admin': ''
-  },
   on: {
     error: function (err: any, req: any, res: any) {
       res.writeHead(500, {
@@ -136,13 +133,13 @@ async function run (): Promise<void> {
     logger.debug(`Incoming request: ${req.method} ${req.originalUrl}`, { headers: req.headers, body: req.body })
     next()
   })
-  app.use('/central-admin', createProxyMiddleware<Request, Response>(centralAdminOptions))
-  // Health Endpoint
+  // Health Endpoint, ahead of the proxy that owns every other path
   app.get('/health', (_req, res) => {
     res.json({
       status: 'OK'
     })
   })
+  app.use('/', createProxyMiddleware<Request, Response>(centralAdminOptions))
   appInstance = app.listen(Config.PORT)
   logger.info(`service is running on port ${Config.PORT}`)
 }

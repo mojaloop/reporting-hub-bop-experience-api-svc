@@ -1,0 +1,242 @@
+openapi: 3.1.0
+info:
+  title: Mojaloop Portal Experience API
+  version: '1.0'
+  description: >-
+    Reads and writes the ledger on behalf of the portal: participants, their
+    accounts, limits and positions, and the settlement models they settle
+    under.
+servers:
+  - url: /
+x-authz:
+  service: ledger
+  resourceTypes: [participants]
+paths:
+  /participants:
+    get:
+      operationId: getParticipants
+      summary: Lists the participants
+      # Hub-wide: the switch answers only the whole list, so holding this
+      # permission is holding it whole
+      x-authz:
+        scopedBy: []
+      responses:
+        '200':
+          description: The participants the caller may see
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+      security:
+      - session: []
+
+  /participants/limits:
+    get:
+      operationId: getParticipantsLimits
+      summary: Lists every participant's limits
+      # Hub-wide: the switch answers only the whole list, so holding this
+      # permission is holding it whole
+      x-authz:
+        scopedBy: []
+      responses:
+        '200':
+          description: Limits, per participant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+      security:
+      - session: []
+
+  /participants/{participantId}:
+    parameters:
+      - name: participantId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getParticipant
+      summary: Returns one participant
+      responses:
+        '200':
+          description: The participant
+      security:
+      - session: []
+
+  /participants/{participantId}/accounts:
+    parameters:
+      - name: participantId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getParticipantAccounts
+      summary: Returns a participant's accounts
+      responses:
+        '200':
+          description: The accounts
+      security:
+      - session: []
+
+  /participants/{participantId}/endpoints:
+    parameters:
+      - name: participantId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getParticipantEndpoints
+      summary: Returns a participant's endpoints
+      responses:
+        '200':
+          description: The endpoints
+      security:
+      - session: []
+
+  /participants/{participantId}/limits:
+    parameters:
+      - name: participantId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getParticipantLimits
+      summary: Returns a participant's limits
+      responses:
+        '200':
+          description: The limits
+      security:
+      - session: []
+    put:
+      operationId: updateParticipantNetDebitCap
+      summary: Changes a participant's net debit cap
+      responses:
+        '200':
+          description: Updated
+      security:
+      - session: []
+
+  /participants/{participantId}/positions:
+    parameters:
+      - name: participantId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getParticipantPositions
+      summary: Returns a participant's positions
+      responses:
+        '200':
+          description: The positions
+      security:
+      - session: []
+
+  /participants/{participantId}/accounts/{accountId}:
+    parameters:
+      - name: participantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      operationId: toggleParticipantAccount
+      summary: Activates or deactivates a participant's account
+      responses:
+        '200':
+          description: Updated
+      security:
+      - session: []
+    post:
+      operationId: recordParticipantFunds
+      summary: Records funds in or out of a participant's account
+      responses:
+        '200':
+          description: Recorded
+      security:
+      - session: []
+
+  /participants/{participantId}/accounts/{accountId}/transfers/{transferId}:
+    parameters:
+      - name: participantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: transferId
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      operationId: recordParticipantTransfer
+      summary: Records a transfer against a participant's account
+      responses:
+        '200':
+          description: Recorded
+      security:
+      - session: []
+
+  /settlementModels:
+    get:
+      operationId: getSettlementModels
+      summary: Lists the settlement models
+      # Deployment-wide reference data, the same list for every caller
+      x-authz:
+        scopedBy: []
+      responses:
+        '200':
+          description: The settlement models
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+      security:
+      - session: []
+
+  /settlementModels/{settlementModelId}:
+    parameters:
+      - name: settlementModelId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getSettlementModel
+      summary: Returns one settlement model
+      # Deployment-wide reference data
+      x-authz:
+        scopedBy: []
+      responses:
+        '200':
+          description: The settlement model
+      security:
+      - session: []
+
+components:
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: ory_kratos_session
+      description: A human's browser session

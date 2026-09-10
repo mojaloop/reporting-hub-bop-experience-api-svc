@@ -1,5 +1,5 @@
 # Arguments
-ARG NODE_VERSION=lts-alpine
+ARG NODE_VERSION=24.19.0-alpine3.24
 
 # NOTE: Ensure you set NODE_VERSION Build Argument as follows...
 #
@@ -45,6 +45,10 @@ USER app-user
 COPY --chown=app-user --from=builder /opt/app/node_modules ./node_modules
 COPY --chown=app-user --from=builder /opt/app/package*.json ./
 COPY --chown=app-user --from=builder /opt/app/dist ./dist
+
+# The document the platform composes this service's authorization from, at the
+# path a deployment names it by
+COPY --chown=app-user --from=builder /opt/app/src/api ./src/api
 
 RUN npm prune --production
 
