@@ -129,8 +129,6 @@ const centralAdminOptions = {
 }
 
 async function run (): Promise<void> {
-  // The image carries the document at src/api beside the compiled server, and
-  // the process runs from the application root
   const authz = await createGuard(path.resolve('src', 'api', 'openapi.yaml'))
   app.use(authz.expose())
   app.use(express.json())
