@@ -78,8 +78,8 @@ jest.mock('http-proxy-middleware', () => {
 })
 
 describe('start', () => {
-  beforeAll(() => {
-    ServiceServer.run()
+  beforeAll(async () => {
+    await ServiceServer.run()
   })
   afterAll(() => {
     ServiceServer.terminate()
@@ -95,6 +95,15 @@ describe('start', () => {
     expect(result.statusCode).toEqual(200)
     expect(jsonResult).toHaveProperty('status')
     expect(jsonResult.status).toEqual('OK')
+  })
+  it('serves its API document where the platform reads it, ahead of the proxy', async () => {
+    const app = ServiceServer.getApp()
+    const result = await request(app).get('/.authz/openapi')
+    expect(result.statusCode).toEqual(200)
+    expect(result.headers['content-type']).toEqual('application/json')
+    expect(JSON.parse(result.text).openapi).toMatch(/^3\.1/)
+    const again = await request(app).get('/.authz/openapi').set('if-none-match', result.headers.etag)
+    expect(again.statusCode).toEqual(304)
   })
   it('central-admin/participants/*/accounts/* endpoint should work', async () => {
     const app = ServiceServer.getApp()

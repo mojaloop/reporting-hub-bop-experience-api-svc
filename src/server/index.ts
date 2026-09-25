@@ -31,7 +31,9 @@
 /// <reference path="../../ambient.d.ts"/>
 
 import http from 'http'
+import path from 'path'
 
+import { createGuard } from '@mojaloop/authz'
 import express, { Request, Response } from 'express'
 import { createProxyMiddleware, fixRequestBody, responseInterceptor } from 'http-proxy-middleware'
 
@@ -127,6 +129,10 @@ const centralAdminOptions = {
 }
 
 async function run (): Promise<void> {
+  // The image carries the document at src/api beside the compiled server, and
+  // the process runs from the application root
+  const authz = await createGuard(path.resolve('src', 'api', 'openapi.yaml'))
+  app.use(authz.expose())
   app.use(express.json())
   // app.use(express.urlencoded())
   app.use((req, _res, next) => {
